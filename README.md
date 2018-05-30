@@ -1,5 +1,5 @@
-# js-programming
-Examples about using of several JS functionalities [using Quokka]
+# Js Programming
+Examples about usage of several JS functionalities [using Quokka]
 
 ## Table of Contents
 
