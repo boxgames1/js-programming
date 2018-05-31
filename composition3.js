@@ -62,7 +62,7 @@ const robertoFirmino = Defense({
   name: "Roberto Firmino",
   number: 9,
   team: "Liverpool",
-  tacklingHability: 81,
+  shootingHability: 81,
   dribblingHability: 82
 });
 
