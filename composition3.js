@@ -1,13 +1,5 @@
 // Declaration
 
-const name = { name: "" };
-const number = { number: 0 };
-const team = { team: "" };
-const tacklingHability = { tacklingHability: 0 };
-const passingHability = { passingHability: 0 };
-const dribblingHability = { dribblingHability: 0 };
-const shootingHability = { shootingHability: 0 };
-
 const canTackle = state => ({
   tackle: playerToTackle => {
     return state.tacklingHability >= playerToTackle.dribblingHability
