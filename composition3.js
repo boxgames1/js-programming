@@ -16,16 +16,16 @@ const canDribble = state => ({
   }
 });
 
-const Defense = options => {
-  return Object.assign(options, canTackle(options));
+const Defense = state => {
+  return Object.assign(state, canTackle(state));
 };
 
-const Midfielder = options => {
-  return Object.assign(options, canDribble(options), canTackle(options));
+const Midfielder = state => {
+  return Object.assign(state, canDribble(state), canTackle(state));
 };
 
-const Striker = options => {
-  return Object.assign(options, canDribble(options));
+const Striker = state => {
+  return Object.assign(state, canDribble(state));
 };
 
 // Usage
