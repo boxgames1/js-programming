@@ -7,4 +7,6 @@ Examples about usage of several JS functionalities [using Quokka]
 - Async iterators
 - Generators
 - Recursion
+- Prototypal inheritance
+- Composition
 
