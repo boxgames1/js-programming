@@ -98,3 +98,5 @@ previous = ht.setItem("list", {
 });
 
 ht.each((item, val) => console.log(item, " =>", val));
+
+ht.clear()
