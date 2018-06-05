@@ -35,11 +35,24 @@ class LList {
   getHeader() {
     return this.header;
   }
+  push_back(item){
+    const last = this.getLastItem();
+    const newItem = new LListNode(item, null);
+    last.setNext(newItem);
+  }
+  getLastItem() {
+    const iterator = LListIterator[Symbol.iterator](this);
+    let item = iterator.next()
+    while(item.value && item.value.getNext() != null){
+      item = iterator.next();
+    }
+    return item.value;
+  }
 }
 
 const LListIterator = {
-  [Symbol.iterator]: () => {
-    let current = list.getHeader();
+  [Symbol.iterator]: (llist) => {
+    let current = llist.getHeader();
     return {
       next: () => {
         current = current.getNext();
@@ -49,7 +62,7 @@ const LListIterator = {
           };
         }
         return {
-          value: current.getValue(),
+          value: current,
           done: false
         };
       }
@@ -59,23 +72,42 @@ const LListIterator = {
 
 const list = new LList([1, 4, 7, 9, 0, 3]);
 
-const listItr = LListIterator[Symbol.iterator]();
+const listItr = LListIterator[Symbol.iterator](list);
+/*
+let item1 = listItr.next();
+item1
+item1 = item1.value.getValue();
+item1
+let item2 = listItr.next();
+item2 = item2.value.getValue();
+item2
+let item3 = listItr.next();
+item3 = item3.value.getValue();
+item3
+let item4 = listItr.next();
+item4 = item4.value.getValue();
+item4
+let item5 = listItr.next();
+item5 = item5.value.getValue();
+item5
+let item6 = listItr.next();
+item6
+let item7 = listItr.next();
+item7*/
 
-for (const ite of LListIterator) {
-  ite;
+list.push_back({
+  hey: "hola",
+  foo: "woo"
+});
+
+list.push_back(23);
+list.push_back("ehwdwedwe");
+
+let itemItr = listItr.next();
+while(!itemItr.done){
+  console.log(itemItr.value.getValue())
+  itemItr = listItr.next();
 }
 
-let item1 = listItr.next();
-item1;
-let item2 = listItr.next();
-item2;
-let item3 = listItr.next();
-item3;
-let item4 = listItr.next();
-item4;
-let item5 = listItr.next();
-item5;
-let item6 = listItr.next();
-item6;
-let item7 = listItr.next();
-item7;
+const lastItem = list.getLastItem()
+lastItem
