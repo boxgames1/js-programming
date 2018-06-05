@@ -35,16 +35,40 @@ class LList {
   getHeader() {
     return this.header;
   }
-  push_back(item){
-    const last = this.getLastItem();
-    const newItem = new LListNode(item, null);
-    last.setNext(newItem);
-  }
-  find(item){
+  getPrevious(node) {
     const iterator = LListIterator[Symbol.iterator](this);
     let itemItr = iterator.next()
-    while(!itemItr.done){
-      if(itemItr.value.getValue() == item) return iterator;
+    while (!itemItr.done && itemItr.value.getNext() != node) {
+      itemItr = iterator.next();
+    }
+    return iterator;
+  }
+  erase(pos) {
+    let prev = pos.current().value;
+    prev = this.getPrevious(prev)
+    const next = pos.current().value.getNext();
+    pos.next();
+    prev.current().value.setNext(next);
+    return pos;
+  }
+  insert(pos, val) {
+    let prev = pos.current().value;
+    prev = this.getPrevious(prev)
+    const next = pos.current().value;
+    const newNode = new LListNode(val, next);
+    const result = this.getPrevious(pos.current().value);
+    prev.current().value.setNext(newNode);
+    return result;
+  }
+  push_back(item) {
+    const last = this.getLastItem();
+    this.insert(last, item);
+  }
+  find(item) {
+    const iterator = LListIterator[Symbol.iterator](this);
+    let itemItr = iterator.next()
+    while (!itemItr.done) {
+      if (itemItr.value.getValue() == item) return iterator;
       itemItr = iterator.next();
     }
     return false;
@@ -52,11 +76,22 @@ class LList {
   getLastItem() {
     const iterator = LListIterator[Symbol.iterator](this);
     let item = iterator.next()
-    while(item.value && item.value.getNext() != null){
+    while (item.value && item.value.getNext() != null) {
       item = iterator.next();
     }
-    return item.value;
+    return iterator;
   }
+
+  print() {
+    const iterator = LListIterator[Symbol.iterator](this);
+    let item;
+    item = iterator.next()
+    while (!item.done) {
+      console.log(item.value.getValue());
+      item = iterator.next()
+    }
+  }
+
 }
 
 const LListIterator = {
@@ -118,15 +153,27 @@ list.push_back({
 list.push_back(23);
 list.push_back("ehwdwedwe");
 
-let itemItr = listItr.next();
-while(!itemItr.done){
+/*let itemItr = listItr.next();
+while (!itemItr.done) {
   console.log(itemItr.value.getValue())
   itemItr = listItr.next();
-}
+}*/
+listItr.next();
+listItr.next();
+listItr.next();
+let weAreOn = listItr.next();
+weAreOn
+let erasePos = list.erase(listItr)
+list.print()
+let insertPos = list.insert(erasePos, {
+  "uuuuu": 3,
+  4: "yehauiodhs"
+});
+list.print()
 
 const lastItem = list.getLastItem()
 lastItem
 
-const findItemItr = list.find(9)
+const findItemItr = list.find(7)
 const findItem = findItemItr.current()
 findItem
