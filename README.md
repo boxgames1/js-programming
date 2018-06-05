@@ -9,4 +9,6 @@ Examples about usage of several JS functionalities [using Quokka]
 - Prototypal inheritance
 - Composition
 - Data structures
-  - Hash Tables
+  - Hash Table
+  - Linked List
+  - Double Linked List
