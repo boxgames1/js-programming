@@ -40,6 +40,15 @@ class LList {
     const newItem = new LListNode(item, null);
     last.setNext(newItem);
   }
+  find(item){
+    const iterator = LListIterator[Symbol.iterator](this);
+    let itemItr = iterator.next()
+    while(!itemItr.done){
+      if(itemItr.value.getValue() == item) return iterator;
+      itemItr = iterator.next();
+    }
+    return false;
+  }
   getLastItem() {
     const iterator = LListIterator[Symbol.iterator](this);
     let item = iterator.next()
@@ -61,6 +70,12 @@ const LListIterator = {
             done: true
           };
         }
+        return {
+          value: current,
+          done: false
+        };
+      },
+      current: () => {
         return {
           value: current,
           done: false
@@ -111,3 +126,7 @@ while(!itemItr.done){
 
 const lastItem = list.getLastItem()
 lastItem
+
+const findItemItr = list.find(9)
+const findItem = findItemItr.current()
+findItem
