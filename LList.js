@@ -36,7 +36,12 @@ class LList {
     return this.header;
   }
   getPrevious(node) {
-    const iterator = LListIterator[Symbol.iterator](this);
+    const iterator = this.begin()
+    let header = this.getHeader().getNext()
+    if (this.getHeader().getNext() == node) {
+      iterator.reset();
+      return iterator;
+    }
     let itemItr = iterator.next();
     while (!itemItr.done && itemItr.value.getNext() != node) {
       itemItr = iterator.next();
@@ -44,28 +49,28 @@ class LList {
     return iterator;
   }
   erase(pos) {
-    let prev = pos.current().value;
-    // Can not erase the header
-    if (prev !== null) {
-      prev = this.getPrevious(prev);
-      const next = pos.current().value.getNext();
-      pos.next();
-      prev.current().value.setNext(next);
-      return pos;
+    let curr = pos.current()
+    if (!this.empty() && curr != null) {
+      let result = curr.getNext()
+      let prev = this.getPrevious(curr).current()
+      if (prev !== null) {
+        prev.setNext(result)
+        return LListIterator[Symbol.iterator](result, this);
+      }
     }
   }
   insert(pos, val) {
-    const newNode = new LListNode(val, pos.current().value.getNext());
-    pos.current().value.setNext(newNode);
+    const newNode = new LListNode(val, pos.current().getNext());
+    pos.current().setNext(newNode);
     pos.next();
     return pos;
   }
   push_back(item) {
-    const last = this.getLastItem();
+    const last = this.end();
     this.insert(last, item);
   }
   find(item) {
-    const iterator = LListIterator[Symbol.iterator](this);
+    const iterator = this.begin()
     let itemItr = iterator.next();
     while (!itemItr.done) {
       if (itemItr.value.getValue() == item) return iterator;
@@ -73,8 +78,20 @@ class LList {
     }
     return false;
   }
-  getLastItem() {
-    const iterator = LListIterator[Symbol.iterator](this);
+  clear() {
+    while (!this.empty()) {
+      this.erase(this.begin())
+    }
+  }
+  empty() {
+    return this.getHeader().getNext() === null;
+  }
+  begin() {
+    const iterator = LListIterator[Symbol.iterator](this.getHeader().getNext(), this);
+    return iterator;
+  }
+  end() {
+    const iterator = this.begin();
     let item = iterator.next();
     if (!item.value) {
       iterator.reset();
@@ -86,8 +103,15 @@ class LList {
     return iterator;
   }
 
+  clone(node) {
+    if (node === null)
+      return null
+    else
+      return new LListNode(node.getValue(), this.clone(node.getNext()))
+  }
+
   print() {
-    const iterator = LListIterator[Symbol.iterator](this);
+    const iterator = this.begin()
     let item;
     item = iterator.next();
     while (!item.done) {
@@ -98,26 +122,23 @@ class LList {
 }
 
 const LListIterator = {
-  [Symbol.iterator]: llist => {
-    let current = llist.getHeader();
+  [Symbol.iterator]: (node, llist) => {
+    let current = node;
     return {
       next: () => {
-        current = current.getNext();
-        if (current === null) {
+        if (current === null || current.getNext() === null) {
           return {
             done: true
           };
         }
+        current = current.getNext();
         return {
           value: current,
           done: false
         };
       },
       current: () => {
-        return {
-          value: current,
-          done: false
-        };
+        return current;
       },
       reset: () => {
         current = llist.getHeader();
@@ -128,8 +149,9 @@ const LListIterator = {
 
 const list = new LList([1, 4, 7, 9, 0, 3]);
 
-const listItr = LListIterator[Symbol.iterator](list);
-/*
+const listItr = LListIterator[Symbol.iterator](list.getHeader(), list);
+
+
 let item1 = listItr.next();
 item1
 item1 = item1.value.getValue();
@@ -149,7 +171,7 @@ item5
 let item6 = listItr.next();
 item6
 let item7 = listItr.next();
-item7*/
+item7
 
 list.push_back({
   hey: "hola",
@@ -159,11 +181,12 @@ list.push_back({
 list.push_back(23);
 list.push_back("ehwdwedwe");
 
-/*let itemItr = listItr.next();
+let itemItr = listItr.next();
 while (!itemItr.done) {
   console.log(itemItr.value.getValue())
   itemItr = listItr.next();
-}*/
+}
+listItr.reset()
 listItr.next();
 listItr.next();
 listItr.next();
@@ -175,11 +198,18 @@ let insertPos = list.insert(erasePos, {
   uuuuu: 3,
   4: "yehauiodhs"
 });
-list.print();
+// list.print();
 
-const lastItem = list.getLastItem();
+const lastItem = list.end().current();
 lastItem;
 
 const findItemItr = list.find(7);
 const findItem = findItemItr.current();
 findItem;
+
+let isEmpty = list.empty();
+isEmpty
+list.clear()
+isEmpty = list.empty();
+isEmpty
+list.print();
