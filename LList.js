@@ -48,10 +48,12 @@ class LList {
     }
     return iterator;
   }
+  // Cost: O(n), O(1) at beginning
   erase(pos) {
     let curr = pos.current()
     if (!this.empty() && curr != null) {
       let result = curr.getNext()
+      // Get Previous node is the most expensive part of this process
       let prev = this.getPrevious(curr).current()
       if (prev !== null) {
         prev.setNext(result);
@@ -60,6 +62,7 @@ class LList {
       }
     }
   }
+  // Cost: O(n), O(1) at beginning
   insert(pos, val) {
     const newNode = new LListNode(val, pos.current().getNext());
     pos.current().setNext(newNode);
@@ -70,6 +73,7 @@ class LList {
     const last = this.end();
     this.insert(last, item);
   }
+  // Cost: O(n)
   find(item) {
     const iterator = this.begin()
     let itemItr = iterator.next();
@@ -79,17 +83,21 @@ class LList {
     }
     return false;
   }
+  // Cost: O(n)
   clear() {
     while (!this.empty()) {
       this.erase(this.begin())
     }
   }
+  // Cost: O(1)
   empty() {
     return this.getHeader().getNext() === null;
   }
+  // Cost: O(1)
   begin() {
     return LListIterator[Symbol.iterator](this.getHeader().getNext(), this);
   }
+  // Cost: O(n)
   end() {
     const iterator = this.begin();
     let item = iterator.next();
@@ -103,6 +111,7 @@ class LList {
     return iterator;
   }
 
+  // Cost: O(n)
   clone(node) {
     if (node === null)
       return null
@@ -112,15 +121,14 @@ class LList {
 
   print() {
     const iterator = this.begin()
-    let item;
-    item = iterator.next();
-    while (!item.done) {
-      console.log(item.value.getValue());
-      item = iterator.next();
+    let iterable = false;
+    while (!iterable && iterator.current() !== null) {
+      console.log(iterator.current().getValue())
+      iterable = iterator.next().done;
     }
   }
 }
-
+// Iterator implementation
 const LListIterator = {
   [Symbol.iterator]: (node, llist) => {
     let current = node;
@@ -147,6 +155,8 @@ const LListIterator = {
   }
 };
 
+
+// Usage
 const list = new LList([1, 4, 7, 9, 0, 3]);
 
 const listItr = LListIterator[Symbol.iterator](list.getHeader(), list);
