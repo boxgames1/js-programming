@@ -54,7 +54,8 @@ class LList {
       let result = curr.getNext()
       let prev = this.getPrevious(curr).current()
       if (prev !== null) {
-        prev.setNext(result)
+        prev.setNext(result);
+        curr.setNext(null);
         return LListIterator[Symbol.iterator](result, this);
       }
     }
@@ -87,8 +88,7 @@ class LList {
     return this.getHeader().getNext() === null;
   }
   begin() {
-    const iterator = LListIterator[Symbol.iterator](this.getHeader().getNext(), this);
-    return iterator;
+    return LListIterator[Symbol.iterator](this.getHeader().getNext(), this);
   }
   end() {
     const iterator = this.begin();
