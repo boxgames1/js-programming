@@ -129,6 +129,7 @@ class LList {
 const LListIterator = {
   [Symbol.iterator]: (node, llist) => {
     let current = node;
+    if (node === null) current = llist.header;
     return {
       next: () => {
         if (current === null || current.getNext() === null) {
@@ -156,7 +157,7 @@ const LListIterator = {
 // Usage
 const list = new LList([1, 4, 7, 9, 0, 3]);
 
-const listItr = LListIterator[Symbol.iterator](list.header, list);
+const listItr = LListIterator[Symbol.iterator](null, list);
 
 
 let item1 = listItr.next();
