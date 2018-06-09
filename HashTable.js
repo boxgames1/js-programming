@@ -16,6 +16,8 @@ class LListNode {
         this.value = value;
     }
 }
+
+
 //Needs an array of values
 class LList {
     constructor(values) {
@@ -28,13 +30,10 @@ class LList {
             current = newNode;
         }
     }
-    getHeader() {
-        return this.header;
-    }
     getPrevious(node) {
         const iterator = this.begin()
-        let header = this.getHeader().getNext()
-        if (this.getHeader().getNext() == node) {
+        let header = this.header.getNext()
+        if (this.header.getNext() == node) {
             iterator.reset();
             return iterator;
         }
@@ -44,17 +43,21 @@ class LList {
         }
         return iterator;
     }
+    // Cost: O(n), O(1) at beginning
     erase(pos) {
         let curr = pos.current()
         if (!this.empty() && curr != null) {
             let result = curr.getNext()
+            // Get Previous node is the most expensive part of this process
             let prev = this.getPrevious(curr).current()
             if (prev !== null) {
-                prev.setNext(result)
+                prev.setNext(result);
+                curr.setNext(null);
                 return LListIterator[Symbol.iterator](result, this);
             }
         }
     }
+    // Cost: O(n), O(1) at beginning
     insert(pos, val) {
         const newNode = new LListNode(val, pos.current().getNext());
         pos.current().setNext(newNode);
@@ -65,6 +68,7 @@ class LList {
         const last = this.end();
         this.insert(last, item);
     }
+    // Cost: O(n)
     find(item) {
         const iterator = this.begin()
         let itemItr = iterator.next();
@@ -74,18 +78,21 @@ class LList {
         }
         return false;
     }
+    // Cost: O(n)
     clear() {
         while (!this.empty()) {
             this.erase(this.begin())
         }
     }
+    // Cost: O(1)
     empty() {
-        return this.getHeader().getNext() === null;
+        return this.header.getNext() === null;
     }
+    // Cost: O(1)
     begin() {
-        const iterator = LListIterator[Symbol.iterator](this.getHeader().getNext(), this);
-        return iterator;
+        return LListIterator[Symbol.iterator](this.header.getNext(), this);
     }
+    // Cost: O(n)
     end() {
         const iterator = this.begin();
         let item = iterator.next();
@@ -99,6 +106,7 @@ class LList {
         return iterator;
     }
 
+    // Cost: O(n)
     clone(node) {
         if (node === null)
             return null
@@ -108,18 +116,18 @@ class LList {
 
     print() {
         const iterator = this.begin()
-        let item;
-        item = iterator.next();
-        while (!item.done) {
-            console.log(item.value.getValue());
-            item = iterator.next();
+        let iterable = false;
+        while (!iterable && iterator.current() !== null) {
+            console.log(iterator.current().getValue())
+            iterable = iterator.next().done;
         }
     }
 }
-
+// Iterator implementation
 const LListIterator = {
     [Symbol.iterator]: (node, llist) => {
         let current = node;
+        if (node === null) current = llist.header;
         return {
             next: () => {
                 if (current === null || current.getNext() === null) {
@@ -137,11 +145,12 @@ const LListIterator = {
                 return current;
             },
             reset: () => {
-                current = llist.getHeader();
+                current = llist.header;
             }
         };
     }
 };
+
 
 class HashTable {
     constructor(size) {
@@ -162,10 +171,7 @@ class HashTable {
         this.elements = 0;
     }
     begin() {
-
-    }
-    end() {
-
+        return HashTableIterator[Symbol.iterator](this);
     }
     insert(item) {
         if (this.find(item)) return;
@@ -188,31 +194,55 @@ class HashTable {
     }
 }
 
-// TODO
+
 const HashTableIterator = {
     [Symbol.iterator]: table => {
         let currentBucket = 0;
+        let listItr = 0;
+        nextIterator = () => {
+            console.log(listItr.current && listItr.current())
+            listItr = 0;
+            for (; currentBucket < table.size; currentBucket++) {
+                // Pass the empty bucket
+                if (table.buckets[currentBucket].empty()) continue;
+                // Generate new iterator for the current position
+                listItr = table.buckets[currentBucket].begin()
+
+                return true;
+            }
+            currentBucket
+            return {
+                done: true
+            };
+        };
         return {
             next: () => {
-                currentBucket++;
-                if (currentBucket === null) {
+                // If we are in a bucket then we'll iterate through list iterator
+                // But ,if that list has ended, then we should get the next iterator
+                if (listItr && listItr.current().next !== null && listItr.next()) {
                     return {
-                        done: true
+                        value: listItr.current(),
+                        done: false
                     };
-                }
-                return {
-                    value: current,
-                    done: false
                 };
+                currentBucket++;
+                return nextIterator();
             },
             current: () => {
+                if (listItr === 0) return {
+                    done: true,
+                }
                 return {
-                    value: current,
+                    value: listItr.current(),
                     done: false
                 };
             },
             reset: () => {
                 currentBucket = 0;
+                nextIterator();
+            },
+            init: () => {
+                nextIterator();
             }
         };
     }
@@ -221,15 +251,26 @@ const HashTableIterator = {
 let hTable = new HashTable(2);
 
 hTable.insert(3);
-hTable.insert(3);
+hTable.insert(23);
 hTable.insert(5);
 hTable.insert({
     a: 1,
     b: 4
 });
+hTable.insert("a");
 
 let isit = hTable.find(3).current();
 isit;
 //find not working
-let a = hTable.buckets[1];
+let a = hTable.buckets[0];
 a;
+
+const hItr = HashTableIterator[Symbol.iterator](hTable);
+hItr.init();
+console.log(hItr.current())
+console.log(hItr.next() && hItr.current())
+console.log(hItr.next() && hItr.current())
+console.log(hItr.next() && hItr.current())
+console.log(hItr.next() && hItr.current())
+console.log(hItr.next() && hItr.current())
+console.log(hItr.next() && hItr.current())
