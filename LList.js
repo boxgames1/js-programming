@@ -32,13 +32,10 @@ class LList {
       current = newNode;
     }
   }
-  getHeader() {
-    return this.header;
-  }
   getPrevious(node) {
     const iterator = this.begin()
-    let header = this.getHeader().getNext()
-    if (this.getHeader().getNext() == node) {
+    let header = this.header.getNext()
+    if (this.header.getNext() == node) {
       iterator.reset();
       return iterator;
     }
@@ -91,11 +88,11 @@ class LList {
   }
   // Cost: O(1)
   empty() {
-    return this.getHeader().getNext() === null;
+    return this.header.getNext() === null;
   }
   // Cost: O(1)
   begin() {
-    return LListIterator[Symbol.iterator](this.getHeader().getNext(), this);
+    return LListIterator[Symbol.iterator](this.header.getNext(), this);
   }
   // Cost: O(n)
   end() {
@@ -149,7 +146,7 @@ const LListIterator = {
         return current;
       },
       reset: () => {
-        current = llist.getHeader();
+        current = llist.header;
       }
     };
   }
@@ -159,7 +156,7 @@ const LListIterator = {
 // Usage
 const list = new LList([1, 4, 7, 9, 0, 3]);
 
-const listItr = LListIterator[Symbol.iterator](list.getHeader(), list);
+const listItr = LListIterator[Symbol.iterator](list.header, list);
 
 
 let item1 = listItr.next();
