@@ -19,7 +19,6 @@ class LListNode {
     this.value = value;
   }
 }
-
 //Needs an array of values
 class LList {
   constructor(values) {
@@ -33,8 +32,8 @@ class LList {
     }
   }
   getPrevious(node) {
-    const iterator = this.begin()
-    let header = this.header.getNext()
+    const iterator = this.begin();
+    let header = this.header.getNext();
     if (this.header.getNext() == node) {
       iterator.reset();
       return iterator;
@@ -47,11 +46,11 @@ class LList {
   }
   // Cost: O(n), O(1) at beginning
   erase(pos) {
-    let curr = pos.current()
+    let curr = pos.current();
     if (!this.empty() && curr != null) {
-      let result = curr.getNext()
+      let result = curr.getNext();
       // Get Previous node is the most expensive part of this process
-      let prev = this.getPrevious(curr).current()
+      let prev = this.getPrevious(curr).current();
       if (prev !== null) {
         prev.setNext(result);
         curr.setNext(null);
@@ -72,10 +71,13 @@ class LList {
   }
   // Cost: O(n)
   find(item) {
-    const iterator = this.begin()
-    let itemItr = iterator.next();
+    const iterator = this.begin();
+    let itemItr = {
+      value: iterator.current(),
+      done: false
+    };
     while (!itemItr.done) {
-      if (itemItr.value.getValue() == item) return iterator;
+      if (itemItr.value.getValue() === item) return iterator;
       itemItr = iterator.next();
     }
     return false;
@@ -83,7 +85,7 @@ class LList {
   // Cost: O(n)
   clear() {
     while (!this.empty()) {
-      this.erase(this.begin())
+      this.erase(this.begin());
     }
   }
   // Cost: O(1)
@@ -110,17 +112,15 @@ class LList {
 
   // Cost: O(n)
   clone(node) {
-    if (node === null)
-      return null
-    else
-      return new LListNode(node.getValue(), this.clone(node.getNext()))
+    if (node === null) return null;
+    else return new LListNode(node.getValue(), this.clone(node.getNext()));
   }
 
   print() {
-    const iterator = this.begin()
+    const iterator = this.begin();
     let iterable = false;
     while (!iterable && iterator.current() !== null) {
-      console.log(iterator.current().getValue())
+      console.log(iterator.current().getValue());
       iterable = iterator.next().done;
     }
   }
@@ -153,33 +153,31 @@ const LListIterator = {
   }
 };
 
-
 // Usage
 const list = new LList([1, 4, 7, 9, 0, 3]);
 
 const listItr = LListIterator[Symbol.iterator](null, list);
 
-
 let item1 = listItr.next();
-item1
+item1;
 item1 = item1.value.getValue();
-item1
+item1;
 let item2 = listItr.next();
 item2 = item2.value.getValue();
-item2
+item2;
 let item3 = listItr.next();
 item3 = item3.value.getValue();
-item3
+item3;
 let item4 = listItr.next();
 item4 = item4.value.getValue();
-item4
+item4;
 let item5 = listItr.next();
 item5 = item5.value.getValue();
-item5
+item5;
 let item6 = listItr.next();
-item6
+item6;
 let item7 = listItr.next();
-item7
+item7;
 
 list.push_back({
   hey: "hola",
@@ -191,10 +189,10 @@ list.push_back("ehwdwedwe");
 
 let itemItr = listItr.next();
 while (!itemItr.done) {
-  console.log(itemItr.value.getValue())
+  console.log(itemItr.value.getValue());
   itemItr = listItr.next();
 }
-listItr.reset()
+listItr.reset();
 listItr.next();
 listItr.next();
 listItr.next();
@@ -216,8 +214,8 @@ const findItem = findItemItr.current();
 findItem;
 
 let isEmpty = list.empty();
-isEmpty
-list.clear()
+isEmpty;
+list.clear();
 isEmpty = list.empty();
-isEmpty
+isEmpty;
 list.print();
