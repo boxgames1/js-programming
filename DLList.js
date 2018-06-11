@@ -26,33 +26,17 @@ class DLListNode {
     this.value = value;
   }
 }
-//Needs an array of values
 class DLList {
   constructor(values) {
-    let current;
     this.header = new DLListNode(null, null, null);
     this.tail = new DLListNode(this.header, null, null);
     this.header.setNext(this.tail);
     this.elements = 0;
   }
-  getPrevious(node) {
-    const iterator = this.begin();
-    let header = this.header.getNext();
-    if (this.header.getNext() == node) {
-      iterator.reset();
-      return iterator;
-    }
-    let itemItr = iterator.next();
-    while (!itemItr.done && itemItr.value.getNext() != node) {
-      itemItr = iterator.next();
-    }
-    return iterator;
-  }
   // Cost: O(1)
   erase(pos) {
     if (pos.assertIsValid()) {
       let curr = pos.current();
-      curr;
       const prev = curr.getPrev();
       prev.setNext(curr.getNext());
       curr.getNext().setPrev(prev);
@@ -60,20 +44,6 @@ class DLList {
       this.elements--;
       return DLListIterator[Symbol.iterator](prev.getNext(), this);
     }
-  }
-  // Cost: O(n)
-  values() {
-    const iterator = this.begin();
-    const values = [];
-    const reach = this.end();
-    reach.prev();
-
-    while (iterator.current() !== reach.current()) {
-      values.push(iterator.current().getValue());
-      iterator.next();
-    }
-    values.push(iterator.current().getValue());
-    return values;
   }
   // Cost: O(1)
   insert(pos, val) {
@@ -140,6 +110,20 @@ class DLList {
     const itr = this.end();
     itr.prev();
     this.erase(itr);
+  }
+  // Cost: O(n)
+  values() {
+    const iterator = this.begin();
+    const values = [];
+    const reach = this.end();
+    reach.prev();
+
+    while (iterator.current() !== reach.current()) {
+      values.push(iterator.current().getValue());
+      iterator.next();
+    }
+    values.push(iterator.current().getValue());
+    return values;
   }
 
   print() {
