@@ -33,6 +33,7 @@ class DLList {
     this.header = new DLListNode(null, null, null);
     this.tail = new DLListNode(this.header, null, null);
     this.header.setNext(this.tail);
+    this.elements = 0;
   }
   getPrevious(node) {
     const iterator = this.begin();
@@ -47,47 +48,40 @@ class DLList {
     }
     return iterator;
   }
-  // Cost: O(n), O(1) at beginning
+  // Cost: O(1)
   erase(pos) {
-    let curr = pos.current();
-    if (!this.empty() && curr != null) {
-      let result = curr.getNext();
-      // Get Previous node is the most expensive part of this process
-      let prev = this.getPrevious(curr).current();
-      if (prev !== null) {
-        prev.setNext(result);
-        curr.setNext(null);
-        return DLListIterator[Symbol.iterator](result, this);
-      }
+    if (pos.assertIsValid()) {
+      let curr = pos.current();
+      curr;
+      const prev = curr.getPrev();
+      prev.setNext(curr.getNext());
+      curr.getNext().setPrev(prev);
+      curr = null;
+      this.elements--;
+      return DLListIterator[Symbol.iterator](prev.getNext(), this);
     }
   }
-  // Cost: O(n), O(1) at beginning
+  // Cost: O(1)
   insert(pos, val) {
-    const newNode = new DLListNode(pos.current(), val, pos.current().getNext());
-    pos.current().setNext(newNode);
-    pos
-      .current()
-      .getNext()
-      .setPrev(newNode);
-    pos.next();
-    return pos;
-  }
-  push_back(item) {
-    const last = this.end();
-    this.insert(last, item);
+    if (pos === this.end() || pos.assertIsValid()) {
+      const curr = pos.current();
+      const prev = curr.getPrev();
+      const newNode = new DLListNode(prev, val, curr);
+      prev.setNext(newNode);
+      curr.setPrev(newNode);
+      this.elements++;
+      return DLListIterator[Symbol.iterator](newNode, this);
+    }
   }
   // Cost: O(n)
   find(item) {
     const iterator = this.begin();
-    let itemItr = {
-      value: iterator.current(),
-      done: false
-    };
-    while (!itemItr.done) {
-      if (itemItr.value.getValue() === item) return iterator;
-      itemItr = iterator.next();
+    while (iterator !== this.end()) {
+      if (iterator.current() !== null && iterator.current().getValue() === item)
+        break;
+      iterator.next();
     }
-    return false;
+    return iterator;
   }
   // Cost: O(n)
   clear() {
@@ -97,7 +91,7 @@ class DLList {
   }
   // Cost: O(1)
   empty() {
-    return this.header.getNext() === this.tail;
+    return this.elements === 0;
   }
   // Cost: O(1)
   begin() {
@@ -105,13 +99,33 @@ class DLList {
   }
   // Cost: O(1)
   end() {
-    return DLListIterator[Symbol.iterator](this.tail.getPrev(), this);
+    return DLListIterator[Symbol.iterator](this.tail, this);
   }
-
-  // Cost: O(n)
-  clone(node) {
-    if (node === null) return null;
-    else return new LListNode(node.getValue(), this.clone(node.getNext()));
+  // Cost: O(1)
+  front() {
+    return this.header.getNext();
+  }
+  // Cost: O(1)
+  back() {
+    return this.header.getPrev();
+  }
+  // Cost: O(1)
+  push_front(value) {
+    this.insert(this.begin(), value);
+  }
+  // Cost: O(1)
+  push_back(item) {
+    this.insert(this.end(), item);
+  }
+  // Cost: O(1)
+  pop_front() {
+    this.erase(this.begin());
+  }
+  // Cost: O(1)
+  pop_back() {
+    const itr = this.end();
+    itr.prev();
+    this.erase(itr);
   }
 
   print() {
@@ -127,8 +141,12 @@ class DLList {
 const DLListIterator = {
   [Symbol.iterator]: (node, dllist) => {
     let current = node;
-    if (node === null) current = dllist.header;
+    if (node === null) current = dllist.header.getNext();
     return {
+      assertIsValid: () => {
+        if (current === null || current.getPrev() === null) return false;
+        return true;
+      },
       next: () => {
         if (
           current === null ||
@@ -167,7 +185,7 @@ const DLListIterator = {
         return current;
       },
       reset: () => {
-        current = dllist.header;
+        current = dllist.header.getNext();
       },
       reset_back: () => {
         current = dllist.tail;
@@ -178,7 +196,27 @@ const DLListIterator = {
 
 // Usage
 const list = new DLList();
-const itr = DLListIterator[Symbol.iterator](null, list);
-itr.reset();
+let itr = DLListIterator[Symbol.iterator](null, list);
 list.insert(itr, 2);
-console.log(list);
+list.insert(itr, 6);
+list.insert(itr, 7);
+list.insert(itr, {
+  a: 1,
+  b: "dedwedw"
+});
+itr.prev();
+list.insert(itr, 9);
+itr.prev();
+itr.prev();
+itr.prev();
+itr.next();
+list.insert(itr, "wolaa");
+itr.reset_back();
+itr.prev();
+itr.prev();
+list.erase(itr);
+list.push_back("find this and erase");
+itr = list.find("find this and erase");
+console.log(itr.current());
+list.erase(itr);
+list.print();
