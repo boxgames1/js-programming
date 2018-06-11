@@ -1,132 +1,184 @@
-//Implementation of DoubleLinkedList with its straight and reverse iterators
+//Double Linked List data Structure with ES5 class style
 
-//Needs the value of the node, previous and next nodes
-function DLListNode(value, prev, next) {
-  this.value = value;
-  this.next = next;
-  this.prev = prev;
-  this.getNext = () => {
-    return this.next;
-  };
-  this.getPrev = () => {
-    return this.prev;
-  };
-  this.getValue = () => {
-    return this.value;
-  };
-  this.setNext = next => {
-    this.next = next;
-  };
-  this.setPrev = prev => {
-    this.prev = prev;
-  };
-  this.setValue = value => {
+//Needs a value, prev and next node
+class DLListNode {
+  constructor(prev, value, next) {
     this.value = value;
-  };
+    this.next = next;
+    this.prev = prev;
+  }
+  getNext() {
+    return this.next;
+  }
+  setNext(next) {
+    this.next = next;
+  }
+  getPrev() {
+    return this.prev;
+  }
+  setPrev(prev) {
+    this.prev = prev;
+  }
+  getValue() {
+    return this.value;
+  }
+  setValue(value) {
+    this.value = value;
+  }
 }
-
 //Needs an array of values
-function DLList(values) {
-  this.tail = new DLListNode(null, null, null);
-  this.header = new DLListNode(null, null, null);
-  let current = this.header;
-  for (const [index, value] of values.entries()) {
-    let newNode = new DLListNode(value, current, null);
-    current.setNext(newNode);
-    current = newNode;
-    if (index == values.length - 1) {
-      current.setNext(this.tail);
-      this.tail.setPrev(current);
+class DLList {
+  constructor(values) {
+    let current;
+    this.header = new DLListNode(null, null, null);
+    this.tail = new DLListNode(this.header, null, null);
+    this.header.setNext(this.tail);
+  }
+  getPrevious(node) {
+    const iterator = this.begin();
+    let header = this.header.getNext();
+    if (this.header.getNext() == node) {
+      iterator.reset();
+      return iterator;
+    }
+    let itemItr = iterator.next();
+    while (!itemItr.done && itemItr.value.getNext() != node) {
+      itemItr = iterator.next();
+    }
+    return iterator;
+  }
+  // Cost: O(n), O(1) at beginning
+  erase(pos) {
+    let curr = pos.current();
+    if (!this.empty() && curr != null) {
+      let result = curr.getNext();
+      // Get Previous node is the most expensive part of this process
+      let prev = this.getPrevious(curr).current();
+      if (prev !== null) {
+        prev.setNext(result);
+        curr.setNext(null);
+        return DLListIterator[Symbol.iterator](result, this);
+      }
     }
   }
-
-  this.getHeader = () => {
-    return this.header;
-  };
-  this.getTail = () => {
-    return this.tail;
-  };
-}
-
-const DLListIterator = {
-  [Symbol.iterator]: dllist => {
-    let current = dllist.getHeader();
-    return {
-      next: () => {
-        current = current.getNext();
-        if (current === null || current.getValue() === null) {
-          return {
-            done: true
-          };
-        }
-        return {
-          value: current.getValue(),
-          done: false
-        };
-      }
-    };
+  // Cost: O(n), O(1) at beginning
+  insert(pos, val) {
+    const newNode = new DLListNode(pos.current(), val, pos.current().getNext());
+    pos.current().setNext(newNode);
+    pos
+      .current()
+      .getNext()
+      .setPrev(newNode);
+    pos.next();
+    return pos;
   }
-};
+  push_back(item) {
+    const last = this.end();
+    this.insert(last, item);
+  }
+  // Cost: O(n)
+  find(item) {
+    const iterator = this.begin();
+    let itemItr = {
+      value: iterator.current(),
+      done: false
+    };
+    while (!itemItr.done) {
+      if (itemItr.value.getValue() === item) return iterator;
+      itemItr = iterator.next();
+    }
+    return false;
+  }
+  // Cost: O(n)
+  clear() {
+    while (!this.empty()) {
+      this.erase(this.begin());
+    }
+  }
+  // Cost: O(1)
+  empty() {
+    return this.header.getNext() === this.tail;
+  }
+  // Cost: O(1)
+  begin() {
+    return DLListIterator[Symbol.iterator](this.header.getNext(), this);
+  }
+  // Cost: O(1)
+  end() {
+    return DLListIterator[Symbol.iterator](this.tail.getPrev(), this);
+  }
 
-const DLListInverseIterator = {
-  [Symbol.iterator]: dllist => {
-    let current = dllist.getTail();
+  // Cost: O(n)
+  clone(node) {
+    if (node === null) return null;
+    else return new LListNode(node.getValue(), this.clone(node.getNext()));
+  }
+
+  print() {
+    const iterator = this.begin();
+    let iterable = false;
+    while (!iterable && iterator.current() !== null) {
+      console.log(iterator.current().getValue());
+      iterable = iterator.next().done;
+    }
+  }
+}
+// Iterator implementation
+const DLListIterator = {
+  [Symbol.iterator]: (node, dllist) => {
+    let current = node;
+    if (node === null) current = dllist.header;
     return {
       next: () => {
-        current = current.getPrev();
-        if (current === null || current.getValue() === null) {
+        if (
+          current === null ||
+          current.getNext() === null ||
+          current === dllist.tail ||
+          current.getNext() === dllist.tail
+        ) {
           return {
             done: true
           };
         }
+        current = current.getNext();
         return {
-          value: current.getValue(),
+          value: current,
           done: false
         };
+      },
+      prev: () => {
+        if (
+          current === null ||
+          current.getPrev() === null ||
+          current === dllist.header ||
+          current.getPrev() === dllist.header
+        ) {
+          return {
+            done: true
+          };
+        }
+        current = current.getPrev();
+        return {
+          value: current,
+          done: false
+        };
+      },
+      current: () => {
+        return current;
+      },
+      reset: () => {
+        current = dllist.header;
+      },
+      reset_back: () => {
+        current = dllist.tail;
       }
     };
   }
 };
 
 // Usage
-const list = new DLList([1, 4, 7, 9, 0, 3]);
-
-const listItr = DLListIterator[Symbol.iterator](list);
-/*for (const ite of DLListIterator) {
-  ite;
-}*/
-
-let item1 = listItr.next();
-item1;
-let item2 = listItr.next();
-item2;
-let item3 = listItr.next();
-item3;
-let item4 = listItr.next();
-item4;
-let item5 = listItr.next();
-item5;
-let item6 = listItr.next();
-item6;
-let item7 = listItr.next();
-item7;
-
-const listInvItr = DLListInverseIterator[Symbol.iterator](list);
-/*for (const ite of DLListInverseIterator) {
-  ite;
-}*/
-
-let inVitem1 = listInvItr.next();
-inVitem1;
-let inVitem2 = listInvItr.next();
-inVitem2;
-let inVitem3 = listInvItr.next();
-inVitem3;
-let inVitem4 = listInvItr.next();
-inVitem4;
-let inVitem5 = listInvItr.next();
-inVitem5;
-let inVitem6 = listInvItr.next();
-inVitem6;
-let inVitem7 = listInvItr.next();
-inVitem7;
+const list = new DLList();
+const itr = DLListIterator[Symbol.iterator](null, list);
+itr.reset();
+list.insert(itr, 2);
+console.log(list);
