@@ -61,6 +61,20 @@ class DLList {
       return DLListIterator[Symbol.iterator](prev.getNext(), this);
     }
   }
+  // Cost: O(n)
+  values() {
+    const iterator = this.begin();
+    const values = [];
+    const reach = this.end();
+    reach.prev();
+
+    while (iterator.current() !== reach.current()) {
+      values.push(iterator.current().getValue());
+      iterator.next();
+    }
+    values.push(iterator.current().getValue());
+    return values;
+  }
   // Cost: O(1)
   insert(pos, val) {
     if (pos === this.end() || pos.assertIsValid()) {
@@ -220,3 +234,5 @@ itr = list.find("find this and erase");
 console.log(itr.current());
 list.erase(itr);
 list.print();
+let a = list.values();
+a;
