@@ -11,4 +11,10 @@ Examples about usage of several JS functionalities [using Quokka]
 - Data structures
   - Hash Table
   - Linked List
-  - Double Linked List
+
+## TODO
+- HashMap
+- Double Linked List
+- AVL
+- Sets
+- Dictionaries
