@@ -38,16 +38,17 @@ class DLList {
     if (pos.assertIsValid()) {
       let curr = pos.current();
       const prev = curr.getPrev();
-      prev.setNext(curr.getNext());
-      curr.getNext().setPrev(prev);
+      const next = curr.getNext();
+      prev.setNext(next);
+      next.setPrev(prev);
       curr = null;
       this.elements--;
-      return DLListIterator[Symbol.iterator](prev.getNext(), this);
+      return DLListIterator[Symbol.iterator](next, this);
     }
   }
   // Cost: O(1)
   insert(pos, val) {
-    if (pos === this.end() || pos.assertIsValid()) {
+    if (pos.current() === this.end().current() || pos.assertIsValid()) {
       const curr = pos.current();
       const prev = curr.getPrev();
       const newNode = new DLListNode(prev, val, curr);
@@ -60,7 +61,7 @@ class DLList {
   // Cost: O(n)
   find(item) {
     const iterator = this.begin();
-    while (iterator !== this.end()) {
+    while (iterator.current() !== this.end().current()) {
       if (iterator.current() !== null && iterator.current().getValue() === item)
         break;
       iterator.next();
@@ -147,10 +148,7 @@ const DLListIterator = {
       },
       next: () => {
         if (
-          current === null ||
-          current.getNext() === null ||
-          current === dllist.tail ||
-          current.getNext() === dllist.tail
+          current === null || current.getNext() === null
         ) {
           return {
             done: true
@@ -166,8 +164,7 @@ const DLListIterator = {
         if (
           current === null ||
           current.getPrev() === null ||
-          current === dllist.header ||
-          current.getPrev() === dllist.header
+          current === dllist.header
         ) {
           return {
             done: true
@@ -214,9 +211,15 @@ itr.prev();
 itr.prev();
 list.erase(itr);
 list.push_back("find this and erase");
+list.push_back(323);
 itr = list.find("find this and erase");
-console.log(itr.current());
-list.erase(itr);
-list.print();
 let a = list.values();
 a;
+itr = list.erase(itr);
+itr.next();
+itr.next();
+list.print();
+a = list.values();
+a;
+console.log(itr.current());
+console.log(list.find(77).current());
