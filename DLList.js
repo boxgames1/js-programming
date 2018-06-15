@@ -48,7 +48,11 @@ class DLList {
   }
   // Cost: O(1)
   insert(pos, val) {
-    if (pos.current() === this.end().current() || pos.assertIsValid()) {
+    const endVal = this.end().current();
+    if (
+      (pos.assertIsValid() || pos.current() === endVal) &&
+      this.find(val).current() === endVal
+    ) {
       const curr = pos.current();
       const prev = curr.getPrev();
       const newNode = new DLListNode(prev, val, curr);
@@ -57,6 +61,7 @@ class DLList {
       this.elements++;
       return DLListIterator[Symbol.iterator](newNode, this);
     }
+    return DLListIterator[Symbol.iterator](null, this);
   }
   // Cost: O(n)
   find(item) {
@@ -117,13 +122,10 @@ class DLList {
     const iterator = this.begin();
     const values = [];
     const reach = this.end();
-    reach.prev();
-
     while (iterator.current() !== reach.current()) {
       values.push(iterator.current().getValue());
       iterator.next();
     }
-    values.push(iterator.current().getValue());
     return values;
   }
 
@@ -147,9 +149,7 @@ const DLListIterator = {
         return true;
       },
       next: () => {
-        if (
-          current === null || current.getNext() === null
-        ) {
+        if (current === null || current.getNext() === null) {
           return {
             done: true
           };
@@ -195,6 +195,10 @@ let itr = DLListIterator[Symbol.iterator](null, list);
 list.insert(itr, 2);
 list.insert(itr, 6);
 list.insert(itr, 7);
+list.insert(itr, 8);
+let a = list.values();
+a;
+
 list.insert(itr, {
   a: 1,
   b: "dedwedw"
@@ -213,7 +217,7 @@ list.erase(itr);
 list.push_back("find this and erase");
 list.push_back(323);
 itr = list.find("find this and erase");
-let a = list.values();
+a = list.values();
 a;
 itr = list.erase(itr);
 itr.next();
@@ -222,4 +226,4 @@ list.print();
 a = list.values();
 a;
 console.log(itr.current());
-console.log(list.find(77).current());
+console.log(list.find(787).current());
