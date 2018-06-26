@@ -11,6 +11,7 @@ Examples about usage of several JS functionalities [using Quokka]
 - Data structures
   - Hash Table
   - Linked List
+  - Binary Tree
 
 ## TODO
 - HashMap
