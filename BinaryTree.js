@@ -34,7 +34,7 @@ class BinaryTreeNode {
       if (node.left === null) node.left = newNode;
       else this.insertNode(node.left, newNode);
     }
-    if (newNode.key === node.key) {
+    else if (newNode.key === node.key) {
       node.value = newNode.value;
     } else {
       if (node.right === null) node.right = newNode;
