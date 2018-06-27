@@ -114,11 +114,50 @@ class BinaryTreeNode {
     }
   }
 
-  search(node, key) {
+  find(node, key) {
     if (node === null) return null;
-    else if (key < node.key) return this.search(node.left, key);
-    else if (key > node.key) return this.search(node.right, key);
+    else if (key < node.key) return this.find(node.left, key);
+    else if (key > node.key) return this.find(node.right, key);
     else return node;
+  }
+  
+  levelOrder() {
+    if (!this.root) return [];
+    var array = [];
+    search(this.root, 1);
+  
+    function search(node, level) {
+      if (node) {
+        if (array.length < level) {
+          array.push([]);
+        }
+        var arr = array[level - 1];
+        arr.push(node.value);
+        search(node.left, level + 1);
+        search(node.right, level + 1);
+      } else {
+        return;
+      }
+    }
+  
+    return array;
+  }
+
+  values() {
+    if (!this.root) return [];
+    var array = [];
+    search(this.root, 1);
+  
+    function search(node, level) {
+      if (node !== null) {
+        array.push(node.value);
+        search(node.left, level + 1);
+        search(node.right, level + 1);
+      } else {
+        array.push("");
+      }
+    }
+    return array;
   }
 }
 
