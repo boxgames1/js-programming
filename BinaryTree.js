@@ -124,22 +124,25 @@ class BinaryTreeNode {
   levelOrder() {
     if (!this.root) return [];
     var array = [];
-    search(this.root, 1);
-  
-    function search(node, level) {
+    search(this.root, 1, 1);
+
+    function search(node, level, index) {
       if (node) {
+        const count = Math.pow(2, level - 1);
         if (array.length < level) {
-          array.push([]);
+          array.push(Array(count).fill(""));
         }
         var arr = array[level - 1];
-        arr.push(node.value);
-        search(node.left, level + 1);
-        search(node.right, level + 1);
+        arr[index - 1] = node;
+        const leftIndex = 2 * index - 1;
+        const rightIndex = 2 * index;
+        search(node.left, level + 1, leftIndex);
+        search(node.right, level + 1, rightIndex);
       } else {
         return;
       }
     }
-  
+
     return array;
   }
 
